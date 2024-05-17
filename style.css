@@ -1,4 +1,4 @@
-*{
+ *{
     margin: 0 auto;
     padding: 0;
     box-sizing: border-box;
@@ -100,4 +100,5 @@ border: 2px red solid;
 }
 input {
     border-radius: 5px;
-}
+} 
+

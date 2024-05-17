@@ -6,14 +6,20 @@ const submitBtn = document.querySelector('.btn')
 const error = document.querySelector('#error')
 const success = document.querySelector('#success')
 const inps = document.querySelectorAll('.itm input')
-const needlessInputs = document.querySelectorAll('.itm-needless input')
 const img = form.querySelectorAll(".img")
+
+const patterns = {
+    name: /^[a-zA-Z'][a-zA-Z-' ]+[a-zA-Z']?$/,
+    phone: /^9989[012345789][0-9]{7}$/,
+    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+}
 
 const fillSpans = document.querySelectorAll('.itm span')
 
+all.innerHTML = inps.length
 
-all.innerHTML = inps.length + needlessInputs.length
 need.innerHTML = inps.length
+
 form.onsubmit = (event) => {
     event.preventDefault()
 
@@ -21,32 +27,35 @@ form.onsubmit = (event) => {
     let successCount = 0
 
     inps.forEach((input, idx) => {
-        pElem.forEach((item) => {
-            let index = idx
-            if (input.value.trim() === '') {
-                errorCount++;
-                input.classList.add('error')
-                fillSpans[idx].classList.add('fill-error')
-                fillSpans[idx].innerHTML = 'заполните это поле'
-                pElem[idx].classList.add("p-error")
-                img[idx].classList.remove('invisible')
-            } else {
-                input.classList.remove('error');
-                fillSpans[idx].classList.remove('fill-error')
-                fillSpans[idx].innerHTML = 'Need to fill'
-                pElem[idx].classList.remove("p-error")
-                img[idx].classList.add('invisible')
-                successCount++
-            }
-        })
+        const type = input.getAttribute('name')
+        const value = input.value.trim()
+
+        if (value === '') {
+            errorCount++
+            input.classList.add('error')
+            fillSpans[idx].classList.add('fill-error')
+            fillSpans[idx].innerHTML = 'заполните это поле'
+            pElem[idx].classList.add("p-error")
+            img[idx].classList.remove('invisible')
+        } else if (patterns[type] && !patterns[type].test(value)) {
+            errorCount++
+            input.classList.add('error')
+            fillSpans[idx].classList.add('fill-error')
+            fillSpans[idx].innerHTML = 'неправильный формат'
+            pElem[idx].classList.add("p-error")
+            img[idx].classList.remove('invisible')
+        } else {
+            successCount++
+            input.classList.remove('error');
+            fillSpans[idx].classList.remove('fill-error')
+            fillSpans[idx].innerHTML = 'Need to fill'
+            pElem[idx].classList.remove("p-error")
+            img[idx].classList.add('invisible')
+        }
     })
 
-    needlessInputs.forEach(input => {
-        input.classList.remove('error')
-    })
-
-    error.innerText = errorCount / 7
-    success.innerText = successCount / 7
+    error.innerText = errorCount
+    success.innerText = successCount
 
     if (errorCount > 0) {
         return;
