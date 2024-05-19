@@ -1,7 +1,7 @@
 const all = document.querySelector("#all")
 const need = document.querySelector("#need")
 const pElem = document.querySelectorAll('.p')
-const form = document.forms.form;
+const form = document.forms.form
 const submitBtn = document.querySelector('.btn')
 const error = document.querySelector('#error')
 const success = document.querySelector('#success')
@@ -17,8 +17,41 @@ const patterns = {
 const fillSpans = document.querySelectorAll('.itm span')
 
 all.innerHTML = inps.length
-
 need.innerHTML = inps.length
+
+function validateInput(input, idx) {
+    const type = input.getAttribute('name')
+    const value = input.value.trim()
+    let isVal = true
+
+    if (value === '') {
+        isVal = false;
+        input.classList.add('error')
+        fillSpans[idx].classList.add('fill-error')
+        fillSpans[idx].innerHTML = 'заполните это поле'
+        pElem[idx].classList.add("p-error")
+        img[idx].classList.remove('invisible')
+    } else if (patterns[type] && !patterns[type].test(value)) {
+        isVal = false
+        input.classList.add('error')
+        fillSpans[idx].classList.add('fill-error')
+        fillSpans[idx].innerHTML = 'неправильный формат'
+        pElem[idx].classList.add("p-error")
+        img[idx].classList.remove('invisible')
+    } else {
+        input.classList.remove('error')
+        fillSpans[idx].classList.remove('fill-error')
+        fillSpans[idx].innerHTML = 'Need to fill'
+        pElem[idx].classList.remove("p-error")
+        img[idx].classList.add('invisible')
+    }
+
+    return isVal
+}
+
+inps.forEach((input, idx) => {
+    input.oninput = () => validateInput(input, idx)
+})
 
 form.onsubmit = (event) => {
     event.preventDefault()
@@ -27,45 +60,25 @@ form.onsubmit = (event) => {
     let successCount = 0
 
     inps.forEach((input, idx) => {
-        const type = input.getAttribute('name')
-        const value = input.value.trim()
-
-        if (value === '') {
-            errorCount++
-            input.classList.add('error')
-            fillSpans[idx].classList.add('fill-error')
-            fillSpans[idx].innerHTML = 'заполните это поле'
-            pElem[idx].classList.add("p-error")
-            img[idx].classList.remove('invisible')
-        } else if (patterns[type] && !patterns[type].test(value)) {
-            errorCount++
-            input.classList.add('error')
-            fillSpans[idx].classList.add('fill-error')
-            fillSpans[idx].innerHTML = 'неправильный формат'
-            pElem[idx].classList.add("p-error")
-            img[idx].classList.remove('invisible')
-        } else {
+        if (validateInput(input, idx)) {
             successCount++
-            input.classList.remove('error');
-            fillSpans[idx].classList.remove('fill-error')
-            fillSpans[idx].innerHTML = 'Need to fill'
-            pElem[idx].classList.remove("p-error")
-            img[idx].classList.add('invisible')
+        } else {
+            errorCount++
         }
-    })
+    });
 
     error.innerText = errorCount
     success.innerText = successCount
 
     if (errorCount > 0) {
-        return;
+        return
     }
 
     alert('success')
 
     inps.forEach(input => {
         input.classList.remove('error')
-    });
+    })
 
     error.innerText = '0'
     let user = {}
@@ -77,4 +90,4 @@ form.onsubmit = (event) => {
     })
 
     console.log(user)
-};
+}
